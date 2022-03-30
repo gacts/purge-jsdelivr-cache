@@ -1,35 +1,31 @@
 {
-  "name": "javascript-action",
-  "version": "1.0.0",
-  "description": "JavaScript Action Template",
-  "main": "index.js",
+  "name": "purge-jsdelivr-cache",
+  "description": "Purges file cache on jsDelivr CDN side",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
-    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run lint && npm run prepare && npm run test"
+    "build": "ncc build src/index.js -o dist --source-map --minify --no-cache"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/gacts/purge-jsdelivr-cache.git"
   },
   "keywords": [
-    "GitHub",
-    "Actions",
-    "JavaScript"
+    "github",
+    "actions",
+    "jsdelivr"
   ],
-  "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "https://github.com/gacts/purge-jsdelivr-cache/issues"
   },
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/gacts/purge-jsdelivr-cache#readme",
   "dependencies": {
-    "@actions/core": "^1.2.5"
+    "@actions/core": "^1.6.0",
+    "@actions/http-client": "^1.0.11"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.31.1",
-    "eslint": "^8.0.0",
-    "jest": "^27.2.5"
+    "@vercel/ncc": "^0.33.3",
+    "eslint": "^8.10.0"
   }
 }

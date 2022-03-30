@@ -1,13 +1,17 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+# Metadata syntax: <https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions>
+
+name: Purge jsDelivr cache # https://jsdelivr.com/
+description: Purges file cache on jsDelivr CDN side
+
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  url:
+    description: URLs for the cache purging (string|list)
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
+
+branding:
+  icon: cloud-lightning
+  color: orange
