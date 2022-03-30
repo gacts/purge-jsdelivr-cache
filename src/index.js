@@ -53,9 +53,9 @@ async function run() {
 
       console.log(bodyObj)
 
-      Array.prototype.forEach.call(bodyObj['paths'], pathObj => {
-        console.log(pathObj)
-      })
+      for (const key in bodyObj['paths']) {
+        console.log(key, bodyObj['paths'][key])
+      }
 
       core.info(`✔ Successes`)
 
