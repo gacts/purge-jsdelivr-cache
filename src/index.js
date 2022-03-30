@@ -10,17 +10,17 @@ const input = {
 // main action entrypoint
 async function run() {
   if (input.urls.length <= 0) {
-    throw new Error('Empty URLs list')
+    core.error('Empty URLs list')
   }
 
   input.urls.forEach(url => {
     if (!url.includes('//cdn.jsdelivr.net')) {
-      throw new Error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
+      core.error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
     }
   })
 
   if (input.attempts <= 0) {
-    throw new Error('Wrong attempts count')
+    core.error('Wrong attempts count')
   }
 
   const http = new httpClient.HttpClient()
@@ -32,7 +32,7 @@ async function run() {
 
     for (let attemptNumber = 1; ; attemptNumber++) {
       if (attemptNumber > input.attempts) {
-        throw new Error(`✖ Too many (${attemptNumber}) attempts`)
+        core.error(`✖ Too many (${attemptNumber}) attempts`)
       }
 
       const res = await http.get(purgingUrl)
@@ -52,9 +52,8 @@ async function run() {
       }
 
       for (const key in bodyObj['paths']) {
-        console.log(bodyObj['paths'][key]['throttled'])
         if (bodyObj['paths'][key]['throttled'] !== false) {
-          throw new Error(`✖ Purging request for the file "${key}" was throttled`)
+          core.error(`✖ Purging request for the file "${key}" was throttled`)
         }
       }
 
@@ -71,7 +70,5 @@ async function run() {
 try {
   run()
 } catch (error) {
-  core.error(error.message)
-
   core.setFailed(error.message)
 }
