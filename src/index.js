@@ -56,7 +56,7 @@ async function run() {
           const pathData = body['paths'][path]
 
           if (Object.prototype.hasOwnProperty.call(pathData, 'throttled') && pathData['throttled'] !== false) {
-            core.debug(JSON.stringify(pathData))
+            core.info(JSON.stringify(pathData))
 
             throw new Error(`✖ Purging request for the file "${path}" was throttled`)
           }
