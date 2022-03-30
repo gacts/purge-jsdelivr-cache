@@ -7,6 +7,10 @@ inputs:
   url:
     description: URLs for the cache purging (string|list)
     required: true
+  attempts:
+    description: Retry attempts (on the request failing) (integer)
+    default: '3'
+    required: false
 
 runs:
   using: 'node16'
