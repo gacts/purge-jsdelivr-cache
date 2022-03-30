@@ -102,3 +102,4 @@ jobs:
           url: |
             foobar
             barbaz
+          attempts: 1

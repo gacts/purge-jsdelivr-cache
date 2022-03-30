@@ -2,14 +2,18 @@ const core = require('@actions/core');
 
 // read action inputs
 const input = {
-  url: core.getInput('url', {required: true}),
-  attempts: core.getInput('attempts'),
+  urls: core.getInput('url', {required: true}).split('\n').map(url => url.trim()),
+  attempts: parseInt(core.getInput('attempts'), 10),
 }
 
 // main action entrypoint
 async function run() {
-  core.info(input.url)
-  core.info(input.attempts) //
+  if (input.urls.length <= 0) {
+    throw new Error('Empty URLs list')
+  }
+
+  console.info(input.urls)
+  console.info(input.attempts)
 }
 
 // run the action
