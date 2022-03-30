@@ -50,10 +50,6 @@ async function run() {
 
     core.endGroup()
   }
-
-  if (hasErrors) {
-    throw new Error('Completed with errors, please try again')
-  }
 }
 
 // run the action
