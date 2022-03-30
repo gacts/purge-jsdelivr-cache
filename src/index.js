@@ -51,6 +51,8 @@ async function run() {
         continue
       }
 
+      console.log(bodyObj)
+
       Array.prototype.forEach.call(bodyObj['paths'], pathObj => {
         console.log(pathObj)
       })
