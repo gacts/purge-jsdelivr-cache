@@ -47,9 +47,11 @@ async function run() {
 
       if (bodyObj['status'].toLowerCase() !== 'finished') {
         core.info(`✖ Wrong status state (${bodyObj['status']})`)
+
+        continue
       }
 
-      (bodyObj['paths'] || {}).forEach(pathObj => {
+      Array.prototype.forEach.call(bodyObj['paths'], pathObj => {
         console.log(pathObj)
       })
 
