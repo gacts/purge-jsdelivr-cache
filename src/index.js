@@ -1,4 +1,5 @@
-const core = require('@actions/core');
+const core = require('@actions/core')
+const httpClient = require('@actions/http-client')
 
 // read action inputs
 const input = {
@@ -12,8 +13,28 @@ async function run() {
     throw new Error('Empty URLs list')
   }
 
-  console.info(input.urls)
-  console.info(input.attempts)
+  input.urls.forEach(url => {
+    if (!url.includes('//cdn.jsdelivr.net')) {
+      throw new Error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
+    }
+  })
+
+  if (input.attempts <= 0) {
+    throw new Error('Wrong attempts count')
+  }
+
+  // create http client instance (docs: <https://github.com/actions/http-client>)
+  const http = new httpClient.HttpClient();
+
+  input.urls.forEach(url => {
+    core.startGroup(`Purging cache for "${url}"`)
+
+    for (let i = 0; i < input.attempts; i++) {
+      core.info(`Attempt ${i}`)
+    }
+
+    core.endGroup()
+  })
 }
 
 // run the action

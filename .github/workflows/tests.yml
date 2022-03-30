@@ -94,7 +94,7 @@ jobs:
       - name: Run this action (one url)
         uses: ./
         with:
-          url: foobar
+          url: https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js
 
       - name: Run this action (list)
         uses: ./
