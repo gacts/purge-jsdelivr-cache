@@ -25,48 +25,46 @@ async function run() {
 
   const http = new httpClient.HttpClient()
 
-  retryLoop:
-    for (let i = 0; i < input.urls.length; i++) {
-      core.startGroup(`Purging cache for "${input.urls[i]}"`)
+  for (let i = 0; i < input.urls.length; i++) {
+    core.startGroup(`Purging cache for "${input.urls[i]}"`)
 
-      const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
+    const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
 
-      for (let j = 1; ; j++) {
-        if (j > input.attempts) {
-          throw new Error(`✖ Too many (${j}) attempts`)
-        }
-
-        const res = await http.get(purgingUrl)
-
-        if (res.message.statusCode !== 200) {
-          core.info(`✖ Response status code = ${res.message.statusCode}`)
-
-          continue
-        }
-
-        const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
-
-        if (bodyObj['status'].toLowerCase() !== 'finished') {
-          core.info(`✖ Wrong status state (${bodyObj['status']})`)
-
-          continue
-        }
-
-        for (const key in bodyObj['paths']) {
-          if (bodyObj['paths'][key]['throttled'] !== false) {
-            core.info(`✖ Request for the file "${key}" was throttled`)
-
-            continue retryLoop
-          }
-        }
-
-        core.info(`✔ Successes`)
-
-        break
+    for (let attemptNumber = 1; ; attemptNumber++) {
+      if (attemptNumber > input.attempts) {
+        throw new Error(`✖ Too many (${attemptNumber}) attempts`)
       }
 
-      core.endGroup()
+      const res = await http.get(purgingUrl)
+
+      if (res.message.statusCode !== 200) {
+        core.info(`✖ Wrong response status code = ${res.message.statusCode}`)
+
+        continue
+      }
+
+      const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
+
+      if (bodyObj['status'].toLowerCase() !== 'finished') {
+        core.info(`✖ Wrong status state (${bodyObj['status']})`)
+
+        continue
+      }
+
+      for (const key in bodyObj['paths']) {
+        console.log(bodyObj['paths'][key]['throttled'])
+        if (bodyObj['paths'][key]['throttled'] !== false) {
+          throw new Error(`✖ Purging request for the file "${key}" was throttled`)
+        }
+      }
+
+      core.info(`✔ Successes`)
+
+      break
     }
+
+    core.endGroup()
+  }
 }
 
 // run the action
