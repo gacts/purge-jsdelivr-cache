@@ -33,7 +33,7 @@ async function run() {
     for (let j = 1; ; j++) {
       const res = await http.get(purgingUrl)
 
-      if (j >= input.attempts) {
+      if (j > input.attempts) {
         throw new Error(`❌ Too many (${j}) attempts`)
       }
 
