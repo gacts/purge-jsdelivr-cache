@@ -35,10 +35,10 @@ async function run() {
         throw new Error(`✖ Too many (${attemptNumber}) attempts`)
       }
 
-      const res = await http.get(purgingUrl)
+      const res = await http.get(purgingUrl), statusCode = 404 // res.message.statusCode
 
-      if (res.message.statusCode !== 200) {
-        core.info(`✖ Wrong response status code = ${res.message.statusCode}`)
+      if (statusCode !== 200) {
+        core.info(`✖ Wrong response status code = ${statusCode}`)
 
         continue
       }
@@ -56,6 +56,8 @@ async function run() {
           const pathData = body['paths'][path]
 
           if (Object.prototype.hasOwnProperty.call(pathData, 'throttled') && pathData['throttled'] !== false) {
+            core.debug(JSON.stringify(pathData))
+
             throw new Error(`✖ Purging request for the file "${path}" was throttled`)
           }
         }
@@ -74,7 +76,5 @@ async function run() {
 try {
   run()
 } catch (error) {
-  core.error(error)
-
   core.setFailed(error.message)
 }
