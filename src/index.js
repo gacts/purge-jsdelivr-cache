@@ -10,17 +10,17 @@ const input = {
 // main action entrypoint
 async function run() {
   if (input.urls.length <= 0) {
-    core.error('Empty URLs list')
+    throw new Error('Empty URLs list')
   }
 
   input.urls.forEach(url => {
     if (!url.includes('//cdn.jsdelivr.net')) {
-      core.error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
+      throw new Error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
     }
   })
 
   if (input.attempts <= 0) {
-    core.error('Wrong attempts count')
+    throw new Error('Wrong attempts count')
   }
 
   const http = new httpClient.HttpClient()
@@ -32,7 +32,7 @@ async function run() {
 
     for (let attemptNumber = 1; ; attemptNumber++) {
       if (attemptNumber > input.attempts) {
-        core.error(`✖ Too many (${attemptNumber}) attempts`)
+        throw new Error(`✖ Too many (${attemptNumber}) attempts`)
       }
 
       const res = await http.get(purgingUrl)
@@ -53,7 +53,7 @@ async function run() {
 
       for (const key in bodyObj['paths']) {
         if (bodyObj['paths'][key]['throttled'] !== false) {
-          core.error(`✖ Purging request for the file "${key}" was throttled`)
+          throw new Error(`✖ Purging request for the file "${key}" was throttled`)
         }
       }
 
@@ -70,5 +70,7 @@ async function run() {
 try {
   run()
 } catch (error) {
+  core.error(error.message)
+
   core.setFailed(error.message)
 }
