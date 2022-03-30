@@ -21,8 +21,5 @@ shell: ## Start shell into a container with node
 lint: ## Execute provided linters
 	docker-compose run $(DC_RUN_ARGS) node yarn lint
 
-test: ## Execute provided tests
-	docker-compose run $(DC_RUN_ARGS) node yarn test
-
 build: ## Build frontend
 	docker-compose run $(DC_RUN_ARGS) node yarn build
