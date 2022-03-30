@@ -36,6 +36,8 @@ async function run() {
     for (let j = 0; j < input.attempts; j++) {
       const res = await http.get(purgingUrl)
 
+      res.message.statusCode = 404
+
       if (res.message.statusCode !== 200) {
         core.info(`Attempt ${j+1} failed: response status code ${res.message.statusCode}`)
 
