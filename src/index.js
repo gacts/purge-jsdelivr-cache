@@ -43,17 +43,21 @@ async function run() {
         continue
       }
 
-      const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
+      const bodyRaw = await res.readBody(), body = JSON.parse(bodyRaw)
 
-      if (bodyObj['status'].toLowerCase() !== 'finished') {
-        core.info(`✖ Wrong status state (${bodyObj['status']})`)
+      if (Object.prototype.hasOwnProperty.call(body, 'status') && body['status'].toLowerCase() !== 'finished') {
+        core.info(`✖ Wrong status state (${body['status']})`)
 
         continue
       }
 
-      for (const key in bodyObj['paths']) {
-        if (bodyObj['paths'][key]['throttled'] !== false) {
-          throw new Error(`✖ Purging request for the file "${key}" was throttled`)
+      if (Object.prototype.hasOwnProperty.call(body, 'paths')) {
+        for (const path in body['paths']) {
+          const pathData = body['paths'][path]
+
+          if (Object.prototype.hasOwnProperty.call(pathData, 'throttled') && pathData['throttled'] !== false) {
+            throw new Error(`✖ Purging request for the file "${path}" was throttled`)
+          }
         }
       }
 
@@ -70,7 +74,7 @@ async function run() {
 try {
   run()
 } catch (error) {
-  core.error(error.message)
+  core.error(error)
 
   core.setFailed(error.message)
 }
