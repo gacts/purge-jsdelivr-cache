@@ -26,7 +26,7 @@ async function run() {
   // create http client instance (docs: <https://github.com/actions/http-client>)
   const http = new httpClient.HttpClient();
 
-  let hasErrors = false
+  let hasErrors = false // has error flag
 
   for (let i = 0; i < input.urls.length; i++) {
     core.startGroup(`Purging cache for "${input.urls[i]}"`)
@@ -34,12 +34,20 @@ async function run() {
     const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
 
     for (let j = 0; j < input.attempts; j++) {
-      core.info(`Attempt ${j+1}`)
-      // const res = await http.get(purgingUrl)
-      //
-      // if (res.message.statusCode !== 200) {
-      //   core.info(`Attempt failed`)
-      // }
+      const res = await http.get(purgingUrl)
+
+      if (res.message.statusCode !== 200) {
+        core.info(`Attempt ${j+1} failed: response status code ${res.message.statusCode}`)
+
+        if (j >= input.attempts - 1) {
+          core.error('Attempts count exceeded')
+          hasErrors = true
+        }
+      } else {
+        core.info(`Attempt ${j+1} successes`)
+
+        break
+      }
     }
 
     core.endGroup()
