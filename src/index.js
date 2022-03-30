@@ -25,45 +25,50 @@ async function run() {
 
   const http = new httpClient.HttpClient()
 
-  for (let i = 0; i < input.urls.length; i++) {
-    core.startGroup(`Purging cache for "${input.urls[i]}"`)
+  retryLoop:
+    for (let i = 0; i < input.urls.length; i++) {
+      core.startGroup(`Purging cache for "${input.urls[i]}"`)
 
-    const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
+      const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
 
-    for (let j = 1; ; j++) {
-      const res = await http.get(purgingUrl)
+      for (let j = 1; ; j++) {
+        if (j > input.attempts) {
+          throw new Error(`✖ Too many (${j}) attempts`)
+        }
 
-      if (j > input.attempts) {
-        throw new Error(`✖ Too many (${j}) attempts`)
+        const res = await http.get(purgingUrl)
+
+        if (res.message.statusCode !== 200) {
+          core.info(`✖ Response status code = ${res.message.statusCode}`)
+
+          continue
+        }
+
+        const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
+
+        if (bodyObj['status'].toLowerCase() !== 'finished') {
+          core.info(`✖ Wrong status state (${bodyObj['status']})`)
+
+          continue
+        }
+
+        console.log(bodyObj)
+
+        for (const key in bodyObj['paths']) {
+          if (bodyObj['paths'][key]['throttled'] !== false) {
+            core.info(`✖ Request for the file "${key}" was throttled`)
+
+            continue retryLoop
+          }
+        }
+
+        core.info(`✔ Successes`)
+
+        break
       }
 
-      if (res.message.statusCode !== 200) {
-        core.info(`✖ Response status code = ${res.message.statusCode}`)
-
-        continue
-      }
-
-      const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
-
-      if (bodyObj['status'].toLowerCase() !== 'finished') {
-        core.info(`✖ Wrong status state (${bodyObj['status']})`)
-
-        continue
-      }
-
-      console.log(bodyObj)
-
-      for (const key in bodyObj['paths']) {
-        console.log(key, bodyObj['paths'][key])
-      }
-
-      core.info(`✔ Successes`)
-
-      break
+      core.endGroup()
     }
-
-    core.endGroup()
-  }
 }
 
 // run the action
