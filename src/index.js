@@ -9,7 +9,7 @@ const input = {
 // main action entrypoint
 async function run() {
   core.info(input.url)
-  core.info(input.attempts)
+  core.info(input.attempts) //
 }
 
 // run the action
