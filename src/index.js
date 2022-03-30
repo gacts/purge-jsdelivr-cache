@@ -26,15 +26,28 @@ async function run() {
   // create http client instance (docs: <https://github.com/actions/http-client>)
   const http = new httpClient.HttpClient();
 
-  input.urls.forEach(url => {
-    core.startGroup(`Purging cache for "${url}"`)
+  let hasErrors = false
 
-    for (let i = 0; i < input.attempts; i++) {
-      core.info(`Attempt ${i}`)
+  for (let i = 0; i < input.urls.length; i++) {
+    core.startGroup(`Purging cache for "${input.urls[i]}"`)
+
+    const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
+
+    for (let j = 0; j < input.attempts; j++) {
+      core.info(`Attempt ${j+1}`)
+      // const res = await http.get(purgingUrl)
+      //
+      // if (res.message.statusCode !== 200) {
+      //   core.info(`Attempt failed`)
+      // }
     }
 
     core.endGroup()
-  })
+  }
+
+  if (hasErrors) {
+    throw new Error('Completed with errors, please try again')
+  }
 }
 
 // run the action
