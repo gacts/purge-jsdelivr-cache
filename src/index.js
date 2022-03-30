@@ -34,14 +34,24 @@ async function run() {
       const res = await http.get(purgingUrl)
 
       if (j > input.attempts) {
-        throw new Error(`❌ Too many (${j}) attempts`)
+        throw new Error(`✖ Too many (${j}) attempts`)
       }
 
       if (res.message.statusCode !== 200) {
-        core.info(`❌ Response status code = ${res.message.statusCode}`)
+        core.info(`✖ Response status code = ${res.message.statusCode}`)
 
         continue
       }
+
+      const bodyRaw = await res.readBody(), bodyObj = JSON.parse(bodyRaw)
+
+      if (bodyObj['status'].toLowerCase() !== 'finished') {
+        core.info(`✖ Wrong status state (${bodyObj['status']})`)
+      }
+
+      (bodyObj['paths'] || {}).forEach(pathObj => {
+        console.log(pathObj)
+      })
 
       core.info(`✔ Successes`)
 
