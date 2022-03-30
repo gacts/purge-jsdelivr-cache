@@ -52,8 +52,6 @@ async function run() {
           continue
         }
 
-        console.log(bodyObj)
-
         for (const key in bodyObj['paths']) {
           if (bodyObj['paths'][key]['throttled'] !== false) {
             core.info(`✖ Request for the file "${key}" was throttled`)
@@ -77,5 +75,5 @@ try {
 } catch (error) {
   core.error(error.message)
 
-  core.setFailed(error)
+  core.setFailed(error.message)
 }
