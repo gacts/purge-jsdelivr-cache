@@ -32,10 +32,10 @@ async function run() {
 
     for (let attemptNumber = 1; ; attemptNumber++) {
       if (attemptNumber > input.attempts) {
-        throw new Error(`✖ Too many (${attemptNumber}) attempts`)
+        throw new Error(`✖ Too many (${attemptNumber - 1}) attempts`)
       }
 
-      const res = await http.get(purgingUrl), statusCode = 404 // res.message.statusCode
+      const res = await http.get(purgingUrl), statusCode = res.message.statusCode
 
       if (statusCode !== 200) {
         core.info(`✖ Wrong response status code = ${statusCode}`)
