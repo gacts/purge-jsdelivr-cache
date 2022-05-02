@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/gacts/purge-jsdelivr-cache#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.7.0",
     "@actions/http-client": "^1.0.11"
   },
   "devDependencies": {
