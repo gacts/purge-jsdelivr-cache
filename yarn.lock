@@ -16,6 +16,13 @@
   dependencies:
     tunnel "0.0.6"
 
+"@actions/http-client@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-2.0.1.tgz#873f4ca98fe32f6839462a6f046332677322f99c"
+  integrity sha512-PIXiMVtz6VvyaRsGY268qvj57hXQEpsYogYOu2nrQhlf+XCGmZstmuZBbAybUl1nQGnvS1k1eEsQ69ZoD7xlSw==
+  dependencies:
+    tunnel "^0.0.6"
+
 "@eslint/eslintrc@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.3.0.tgz#29f92c30bb3e771e4a2048c95fa6855392dfac4f"
@@ -532,7 +539,7 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-tunnel@0.0.6:
+tunnel@0.0.6, tunnel@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.6.tgz#72f1314b34a5b192db012324df2cc587ca47f92c"
   integrity sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==
