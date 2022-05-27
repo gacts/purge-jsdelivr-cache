@@ -22,7 +22,7 @@
   "homepage": "https://github.com/gacts/purge-jsdelivr-cache#readme",
   "dependencies": {
     "@actions/core": "^1.8.2",
-    "@actions/http-client": "^1.0.11"
+    "@actions/http-client": "^2.0.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.34.0",
