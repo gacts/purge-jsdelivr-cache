@@ -9,7 +9,7 @@ inputs:
     description: URLs for the cache purging (string|list)
     required: true
   attempts:
-    description: Retry attempts (on the request failing) (integer)
+    description: Retry attempts (on the request failing) (uint)
     default: '3'
     required: false
 
