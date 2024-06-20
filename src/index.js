@@ -91,7 +91,7 @@ async function run() {
         }
       }
 
-      core.info(`✔ Successes (${url})`)
+      core.info(`✔ Success (${url})`)
 
       break
     }
