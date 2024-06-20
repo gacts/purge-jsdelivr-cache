@@ -15,7 +15,7 @@ async function run() {
 
   input.urls.forEach(url => {
     if (!url.includes('//cdn.jsdelivr.net')) {
-      throw new Error(`Url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
+      throw new Error(`The url "${url}" does not contains jsDelivr domain "cdn.jsdelivr.net"`)
     }
   })
 
@@ -25,37 +25,65 @@ async function run() {
 
   const http = new httpClient.HttpClient()
 
-  for (let i = 0; i < input.urls.length; i++) {
-    core.startGroup(`Purging cache for "${input.urls[i]}"`)
-
-    const purgingUrl = input.urls[i].replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
+  for (const result of (await Promise.allSettled(input.urls.map(async (url) => {
+    const purgingUrl = url.replace('//cdn.jsdelivr.net', '//purge.jsdelivr.net')
 
     for (let attemptNumber = 1; ; attemptNumber++) {
       if (attemptNumber > input.attempts) {
-        throw new Error(`✖ Too many (${attemptNumber - 1}) attempts`)
+        throw new Error(`✖ Too many (${attemptNumber - 1}) attempts for the url "${url}"`)
       }
 
-      const res = await http.get(purgingUrl), statusCode = res.message.statusCode
+      const res = await http.get(purgingUrl)
 
-      if (statusCode !== 200) {
-        core.info(`✖ Wrong response status code = ${statusCode}`)
+      if (res.message.statusCode !== 200) {
+        core.info(`✖ Wrong response status code (${res.message.statusCode}) for the url "${url}"`)
 
         continue
       }
 
-      const bodyRaw = await res.readBody(), body = JSON.parse(bodyRaw)
+      /**
+       * @see https://purge.jsdelivr.net/npm/jquery@3.2.0/dist/jquery.js
+       *              ^^^^^^ instead of `cdn.`
+       *
+       * @example
+       * {
+       *   "id": "94Ntf00wDmtaEHm9",
+       *   "status": "finished",
+       *   "timestamp": "2024-06-20T08:17:35.569Z",
+       *   "paths": {
+       *     "/npm/jquery@3.2.0/dist/jquery.js": {
+       *       "throttled": false,
+       *       "providers": {
+       *         "CF": true,
+       *         "FY": true
+       *       }
+       *     }
+       *   }
+       * }
+       *
+       * @type {{
+       *   id: string | undefined,
+       *   status: string | undefined,
+       *   timestamp: string | undefined,
+       *   paths: Object.<string, {
+       *     throttled: boolean | undefined,
+       *     providers: Object.<string, boolean> | undefined,
+       *   }> | undefined,
+       * }}
+       */
+      const body = JSON.parse(await res.readBody())
 
-      if (Object.prototype.hasOwnProperty.call(body, 'status') && body['status'].toLowerCase() !== 'finished') {
-        core.info(`✖ Wrong status state (${body['status']})`)
+      if (body.status && body.status.toLowerCase() !== 'finished') {
+        core.info(`✖ Wrong status state (${body.status}) for the url "${url}"`)
 
         continue
       }
 
-      if (Object.prototype.hasOwnProperty.call(body, 'paths')) {
-        for (const path in body['paths']) {
-          const pathData = body['paths'][path]
+      if (body.paths && typeof body.paths === 'object') {
+        for (const path in body.paths) {
+          const pathData = body.paths[path]
 
-          if (Object.prototype.hasOwnProperty.call(pathData, 'throttled') && pathData['throttled'] !== false) {
+          if (pathData.throttled && pathData.throttled !== false) {
             core.info(JSON.stringify(pathData))
 
             throw new Error(`✖ Purging request for the file "${path}" was throttled`)
@@ -63,18 +91,20 @@ async function run() {
         }
       }
 
-      core.info(`✔ Successes`)
+      core.info(`✔ Successes (${url})`)
 
       break
     }
-
-    core.endGroup()
+  })))) {
+    if (result.status === 'rejected') {
+      throw result.reason
+    }
   }
 }
 
 // run the action
-try {
-  run()
-} catch (error) {
+(async () => {
+  await run()
+})().catch(error => {
   core.setFailed(error.message)
-}
+})

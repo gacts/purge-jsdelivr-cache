@@ -3,8 +3,8 @@
   "description": "Purges file cache on jsDelivr CDN side",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src",
-    "build": "ncc build src/index.js -o dist --source-map --minify --no-cache"
+    "lint": "eslint --config package.json ./src/**/*.js",
+    "build": "ncc build src/index.js -o dist --minify --no-cache"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,18 @@
   "devDependencies": {
     "@vercel/ncc": "^0.38.1",
     "eslint": "^8.57.0"
+  },
+  "eslintConfig": {
+    "env": {
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2018
+    },
+    "rules": {}
   }
 }
