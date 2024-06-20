@@ -73,7 +73,7 @@ jobs:
       - name: Run this action (one url)
         uses: ./
         with:
-          url: https://cdn.jsdelivr.net/npm/jquery@1.6.2/dist/node-jquery.js
+          url: https://cdn.jsdelivr.net/npm/jquery@1.6.2/dist/node-jquery.js_${{ github.sha }}
 
       - name: Run this action (list)
         uses: ./
@@ -81,6 +81,4 @@ jobs:
           url: |
             https://cdn.jsdelivr.net/npm/jquery@3.2.0/dist/jquery.js_${{ github.sha }}
             https://cdn.jsdelivr.net/npm/jquery@3.3.0/dist/jquery.min.js_${{ github.sha }}
-            https://cdn.jsdelivr.net/npm/jquery@1.6.2/dist/node-jquery.js
-            https://cdn.jsdelivr.net/npm/jquery@1.6.2/dist/node-jquery.min.js
           attempts: 1

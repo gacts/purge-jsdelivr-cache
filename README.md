@@ -10,6 +10,9 @@
 
 This GitHub action allows purge file cache on [jsDelivr][jsdelivr] CDN side.
 
+> [!NOTE]
+> To avoid throttling errors, please use this action with caution and only when necessary.
+
 ## Usage
 
 ```yaml
